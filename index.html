@@ -415,6 +415,37 @@
   .catch(err => {
     console.error("Camera access denied:", err);
   });
+<button id="toggleCam">Switch Camera</button>
+<video id="video" autoplay playsinline></video>
+
+<script>
+let useFront = true; // Start with front camera
+let currentStream;
+
+function startCamera() {
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop()); // Stop existing stream
+  }
+
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: useFront ? "user" : "environment" }
+  })
+  .then(stream => {
+    currentStream = stream;
+    document.getElementById('video').srcObject = stream;
+  })
+  .catch(err => {
+    alert("Could not access camera: " + err.message);
+  });
+}
+
+document.getElementById("toggleCam").addEventListener("click", () => {
+  useFront = !useFront; // Switch mode
+  startCamera();
+});
+
+startCamera(); // Start on load
+</script>
 
 
         // --- Event Listeners ---
@@ -426,3 +457,4 @@
 </body>
 
 </html>
+
