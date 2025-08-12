@@ -22,6 +22,15 @@
     margin: 10px;
     padding: 10px 20px;
     font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
   }
 </style>
 </head>
@@ -33,10 +42,11 @@
 <button id="toggleCam" disabled>Switch Camera</button>
 
 <script>
-let useFront = true;
-let currentStream;
+let useFront = true; // true = front camera, false = back camera
+let currentStream;   // store the active stream
 
 async function startCamera() {
+  // Stop any existing camera before starting a new one
   if (currentStream) {
     currentStream.getTracks().forEach(track => track.stop());
   }
@@ -53,7 +63,10 @@ async function startCamera() {
   }
 }
 
+// Start camera after user clicks the button (required for iOS Safari)
 document.getElementById("startCam").addEventListener("click", startCamera);
+
+// Toggle between front and back camera
 document.getElementById("toggleCam").addEventListener("click", () => {
   useFront = !useFront;
   startCamera();
