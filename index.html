@@ -415,37 +415,86 @@
   .catch(err => {
     console.error("Camera access denied:", err);
   });
-<button id="toggleCam">Switch Camera</button>
-<video id="video" autoplay playsinline></video>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camera Access Example</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f8f9fa;
+    margin: 0;
+    padding: 20px;
+  }
+  video {
+    width: 100%;
+    max-width: 480px;
+    border-radius: 10px;
+    background: black;
+  }
+  button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+  }
+</style>
+</head>
+<body>
+
+<h1>Camera Access Demo</h1>
+<video id="video" autoplay playsinline></video><br>
+<button id="startCam">Start Camera</button>
+<button id="toggleCam" disabled>Switch Camera</button>
 
 <script>
-let useFront = true; // Start with front camera
-let currentStream;
+let useFront = true; // true = front camera, false = back camera
+let currentStream;   // store the active stream
 
-function startCamera() {
+async function startCamera() {
+  // Stop any existing camera before starting a new one
   if (currentStream) {
-    currentStream.getTracks().forEach(track => track.stop()); // Stop existing stream
+    currentStream.getTracks().forEach(track => track.stop());
   }
-
-  navigator.mediaDevices.getUserMedia({
-    video: { facingMode: useFront ? "user" : "environment" }
-  })
-  .then(stream => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: useFront ? "user" : "environment" },
+      audio: false
+    });
     currentStream = stream;
-    document.getElementById('video').srcObject = stream;
-  })
-  .catch(err => {
+    document.getElementById("video").srcObject = stream;
+    document.getElementById("toggleCam").disabled = false;
+  } catch (err) {
     alert("Could not access camera: " + err.message);
-  });
+  }
 }
 
+// Start camera after user clicks the button (required for iOS Safari)
+document.getElementById("startCam").addEventListener("click", startCamera);
+
+// Toggle between front and back camera
 document.getElementById("toggleCam").addEventListener("click", () => {
-  useFront = !useFront; // Switch mode
+  useFront = !useFront;
   startCamera();
 });
-
-startCamera(); // Start on load
 </script>
+
+</body>
+</html>
+>
 
 
         // --- Event Listeners ---
@@ -457,4 +506,5 @@ startCamera(); // Start on load
 </body>
 
 </html>
+
 
